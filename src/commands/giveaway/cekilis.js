@@ -7,14 +7,18 @@ module.exports = {
     .setDescription('Yeni çekiliş başlatır')
     .addStringOption(option =>
       option.setName('sure')
-        .setDescription('Çekiliş süresi (örn: 1h, 1d, 1w)')
+        .setDescription('Çekiliş süresi (örn: 1h, 1d, 1w - saat, gün, hafta)')
         .setRequired(true))
     .addIntegerOption(option =>
-      option.setName('kazanan')
-        .setDescription('Kazanan sayısı')
+      option.setName('kazanan_sayisi')
+        .setDescription('Kazanan sayısı (rastgele çekiliş için)')
         .setMinValue(1)
         .setMaxValue(10)
-        .setRequired(true))
+        .setRequired(false))
+    .addUserOption(option =>
+      option.setName('kazanan')
+        .setDescription('Önceden belirlenen kazanan (belirtilirse rastgele çekilis yapılmaz)')
+        .setRequired(false))
     .addStringOption(option =>
       option.setName('odul')
         .setDescription('Çekiliş ödülü')
@@ -27,7 +31,8 @@ module.exports = {
 
   async execute(interaction) {
     const duration = interaction.options.getString('sure');
-    const winnerCount = interaction.options.getInteger('kazanan');
+    const winnerCount = interaction.options.getInteger('kazanan_sayisi') || 1;
+    const predeterminedWinner = interaction.options.getUser('kazanan');
     const prize = interaction.options.getString('odul');
     const channel = interaction.options.getChannel('kanal') || interaction.channel;
 
@@ -40,6 +45,10 @@ module.exports = {
       return interaction.reply({ content: '❌ Maksimum çekiliş süresi 2 haftadır!', ephemeral: true });
     }
 
+    if (!predeterminedWinner && !interaction.options.getInteger('kazanan_sayisi')) {
+      return interaction.reply({ content: '❌ Ya kazanan sayısı belirtmelisin ya da önceden belirlenen bir kazanan seçmelisin!', ephemeral: true });
+    }
+
     try {
       const endTime = Date.now() + durationMs;
       const endTimestamp = Math.floor(endTime / 1000);
@@ -49,7 +58,7 @@ module.exports = {
         .setTitle('🎉 ÇEKİLİŞ 🎉')
         .setDescription(`**Ödül:** ${prize}\n\n🎉 **Katılmak için butona tıkla!**`)
         .addFields(
-          { name: '� Kazanan Sayısı', value: `${winnerCount}`, inline: true },
+          { name: '🎯 Kazanan', value: predeterminedWinner ? `${predeterminedWinner} (Önceden Belirlendi)` : `${winnerCount} Kişi Rastgele`, inline: true },
           { name: '⏰ Bitiş', value: `<t:${endTimestamp}:R>`, inline: true },
           { name: '👤 Düzenleyen', value: `${interaction.user}`, inline: true }
         )
@@ -80,7 +89,8 @@ module.exports = {
         endTime: endTime,
         hostedBy: interaction.user.id,
         participants: [],
-        ended: false
+        ended: false,
+        predeterminedWinner: predeterminedWinner ? predeterminedWinner.id : null
       };
 
       interaction.client.giveaways.set(message.id, giveawayData);
@@ -114,7 +124,9 @@ async function endGiveaway(client, messageId) {
 
     // Kazananları belirle
     let winners = [];
-    if (giveaway.participants.length > 0) {
+    if (giveaway.predeterminedWinner) {
+      winners = [giveaway.predeterminedWinner];
+    } else if (giveaway.participants.length > 0) {
       const shuffled = [...giveaway.participants].sort(() => 0.5 - Math.random());
       winners = shuffled.slice(0, giveaway.winnerCount);
     }

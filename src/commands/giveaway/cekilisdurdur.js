@@ -37,7 +37,9 @@ module.exports = {
 
       // Kazananları belirle
       let winners = [];
-      if (giveaway.participants.length > 0) {
+      if (giveaway.predeterminedWinner) {
+        winners = [giveaway.predeterminedWinner];
+      } else if (giveaway.participants.length > 0) {
         const shuffled = [...giveaway.participants].sort(() => 0.5 - Math.random());
         winners = shuffled.slice(0, giveaway.winnerCount);
       }
