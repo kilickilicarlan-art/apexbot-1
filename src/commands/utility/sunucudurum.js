@@ -7,16 +7,16 @@ module.exports = {
     .setDescription('Minecraft sunucu durumunu kontrol eder')
     .addStringOption(option =>
       option.setName('ip')
-        .setDescription('Sunucu IP adresi (varsayılan: ApexMc.swiftservers.org)')
+        .setDescription('Sunucu IP adresi (varsayılan: apexnw.net.tr)')
         .setRequired(false))
     .addIntegerOption(option =>
       option.setName('port')
-        .setDescription('Sunucu portu (varsayılan: 25565)')
+        .setDescription('Sunucu portu (varsayılan: 25577)')
         .setRequired(false)),
 
   async execute(interaction) {
-    const serverIP = interaction.options.getString('ip') || 'ApexMc.swiftservers.org';
-    const serverPort = interaction.options.getInteger('port') || 25565;
+    const serverIP = interaction.options.getString('ip') || 'apexnw.net.tr';
+    const serverPort = interaction.options.getInteger('port') || 25577;
 
     await interaction.reply({ 
       content: `🔍 ${serverIP}:${serverPort} sunucusu kontrol ediliyor...`, 
