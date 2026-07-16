@@ -20,7 +20,7 @@ module.exports = {
       // !ip komutu - DM'den gönderir
       if (command === 'ip') {
         try {
-          const serverIP = 'ApexMc.swiftservers.org'; // Sunucu IP adresi
+          const serverIP = 'apexnw.net.tr'; // Sunucu IP adresi
           const embed = new EmbedBuilder()
             .setColor('#00B5FF')
             .setTitle('🎮 Sunucu IP Adresi')
