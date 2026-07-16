@@ -9,6 +9,10 @@ module.exports = {
       option.setName('sure')
         .setDescription('Çekiliş süresi (örn: 1h, 1d, 1w - saat, gün, hafta)')
         .setRequired(true))
+    .addStringOption(option =>
+      option.setName('odul')
+        .setDescription('Çekiliş ödülü')
+        .setRequired(true))
     .addIntegerOption(option =>
       option.setName('kazanan_sayisi')
         .setDescription('Kazanan sayısı (rastgele çekiliş için)')
@@ -19,10 +23,6 @@ module.exports = {
       option.setName('kazanan')
         .setDescription('Önceden belirlenen kazanan (belirtilirse rastgele çekilis yapılmaz)')
         .setRequired(false))
-    .addStringOption(option =>
-      option.setName('odul')
-        .setDescription('Çekiliş ödülü')
-        .setRequired(true))
     .addChannelOption(option =>
       option.setName('kanal')
         .setDescription('Çekilişin gönderileceği kanal (belirtilmezse bu kanal)')
@@ -58,7 +58,6 @@ module.exports = {
         .setTitle('🎉 ÇEKİLİŞ 🎉')
         .setDescription(`**Ödül:** ${prize}\n\n🎉 **Katılmak için butona tıkla!**`)
         .addFields(
-          { name: '🎯 Kazanan', value: predeterminedWinner ? `${predeterminedWinner} (Önceden Belirlendi)` : `${winnerCount} Kişi Rastgele`, inline: true },
           { name: '⏰ Bitiş', value: `<t:${endTimestamp}:R>`, inline: true },
           { name: '👤 Düzenleyen', value: `${interaction.user}`, inline: true }
         )
